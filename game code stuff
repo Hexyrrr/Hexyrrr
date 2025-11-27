@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hourly Rotating Number Puzzle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #f2f2f2;
+    }
+
+    header h1 {
+      color: #333;
+    }
+
+    #puzzle {
+      margin: 30px auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 0 auto;
+    }
+
+    td {
+      border: 2px solid #333;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      text-align: center;
+      vertical-align: middle;
+      background-color: white;
+    }
+
+    #countdown {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hourly Rotating Number Puzzle</h1>
+  </header>
+
+  <div id="countdown">
+    Next puzzle rotation in: <span id="timer">00:00:00</span>
+  </div>
+
+  <div id="puzzle">
+    <table id="puzzle-table"></table>
+  </div>
+
+  <footer>
+    &copy; 2025 Your Name. Modifications and use allowed with credit. No commercial use.
+  </footer>
+
+  <script>
+    // Puzzle numbers 1 through 9
+    let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    const table = document.getElementById("puzzle-table");
+    const timerEl = document.getElementById("timer");
+
+    // Function to shuffle numbers
+    function shuffle(array) {
+      let currentIndex = array.length, randomIndex;
+      while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+      }
+      return array;
+    }
+
+    // Function to render the puzzle
+    function renderPuzzle() {
+      table.innerHTML = "";
+      const shuffled = shuffle([...numbers]); // shuffle a copy
+      for (let i = 0; i < 3; i++) {
+        const row = table.insertRow();
+        for (let j = 0; j < 3; j++) {
+          const cell = row.insertCell();
+          cell.textContent = shuffled[i * 3 + j];
+        }
+      }
+    }
+
+    // Function to calculate remaining time until next hour
+    function getTimeUntilNextHour() {
+      const now = new Date();
+      const nextHour = new Date();
+      nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+      const diff = nextHour - now;
+      const hours = Math.floor(diff / 1000 / 60 / 60);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      return { hours, minutes, seconds, diff };
+    }
+
+    // Function to update timer every second
+    function updateTimer() {
+      const { hours, minutes, seconds, diff } = getTimeUntilNextHour();
+      timerEl.textContent = 
+        `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+      // If time is up, rotate puzzle
+      if (diff <= 1000) {
+        renderPuzzle();
+      }
+    }
+
+    // Initialize puzzle
+    renderPuzzle();
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
